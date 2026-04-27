@@ -3,7 +3,7 @@ kind: Deployment
 metadata:
   name: java-hello
 spec:
-  replicas: 2
+  replicas: 1
   selector:
     matchLabels:
       app: java-hello
@@ -13,5 +13,8 @@ spec:
         app: java-hello
     spec:
       containers:
-      - name: java-hello
-        image: glacierknight/java-hello:latest
+        - name: java-hello
+          image: glacierknight/java-hello:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8080
