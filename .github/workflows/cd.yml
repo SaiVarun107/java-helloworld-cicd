@@ -1,0 +1,28 @@
+name: Kubernetes CD (Simple)
+
+on:
+  push:
+    branches: [ "main" ]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Build Docker image
+        run: docker build -t java-hello:latest .
+
+      - name: Create Kubernetes cluster (kind)
+        uses: helm/kind-action@v1.10.0
+
+      - name: Load image into cluster
+        run: kind load docker-image java-hello:latest
+
+      - name: Deploy to Kubernetes
+        run: |
+          kubectl apply -f k8s/
+          kubectl get pods
+          kubectl get services
