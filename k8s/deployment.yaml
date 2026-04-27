@@ -14,7 +14,6 @@ spec:
     spec:
       containers:
         - name: java-hello
-          image: glacierknight/java-hello:latest
-          imagePullPolicy: Always
+          image: java-hello:latest
           ports:
             - containerPort: 8080

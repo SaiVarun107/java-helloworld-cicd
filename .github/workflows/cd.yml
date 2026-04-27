@@ -1,10 +1,8 @@
-name: CD Pipeline
+name: Simple Kubernetes CD
 
 on:
-  workflow_run:
-    workflows: ["Java CI Pipeline"]
-    types:
-      - completed
+  push:
+    branches: [ "main" ]
 
 jobs:
   deploy:
@@ -13,20 +11,20 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v4
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: ap-south-1
+      # Build Docker image locally
+      - name: Build Docker image
+        run: docker build -t java-hello:latest .
 
-      - name: Update kubeconfig
-        run: |
-          aws eks update-kubeconfig \
-            --region ap-south-1 \
-            --name java-cicd-cluster
+      # Create Kubernetes cluster
+      - name: Create kind cluster
+        uses: helm/kind-action@v1.10.0
 
+      # Load image into cluster
+      - name: Load image to kind
+        run: kind load docker-image java-hello:latest
+
+      # Deploy to Kubernetes
       - name: Deploy to Kubernetes
         run: |
-          kubectl apply -f k8s/ --validate=false
-          kubectl rollout status deployment/java-hello
+          kubectl apply -f k8s/
+          kubectl get pods
