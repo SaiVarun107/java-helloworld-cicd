@@ -13,30 +13,26 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      # ✅ Step 1: Setup Java
       - name: Setup Java
         uses: actions/setup-java@v4
         with:
           distribution: temurin
           java-version: 17
 
-      # ✅ Step 2: Build JAR
       - name: Build JAR with Maven
         run: mvn clean package
 
-      # ✅ Step 3: Build Docker image
       - name: Build Docker image
         run: docker build -t java-hello:latest .
 
-      # ✅ Step 4: Create Kubernetes cluster
+      # ✅ Create kind cluster (default name: kind)
       - name: Create Kubernetes cluster
         uses: helm/kind-action@v1.10.0
 
-      # ✅ Step 5: Load image into cluster
+      # ✅ Load image into the SAME cluster
       - name: Load image into kind
         run: kind load docker-image java-hello:latest
 
-      # ✅ Step 6: Deploy to Kubernetes
       - name: Deploy to Kubernetes
         run: |
           kubectl apply -f k8s/
