@@ -30,7 +30,7 @@ jobs:
         uses: helm/kind-action@v1.10.0
         with:
           cluster_name: kind
-          wait: true
+          wait: 60s
 
       # ✅ Load image AFTER cluster is ready
       - name: Load image into kind
