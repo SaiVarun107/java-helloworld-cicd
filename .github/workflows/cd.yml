@@ -25,15 +25,19 @@ jobs:
       - name: Build Docker image
         run: docker build -t java-hello:latest .
 
-      # ✅ Create kind cluster (default name: kind)
+      # ✅ Create kind cluster AND wait until ready
       - name: Create Kubernetes cluster
         uses: helm/kind-action@v1.10.0
+        with:
+          cluster_name: kind
+          wait: true
 
-      # ✅ Load image into the SAME cluster
+      # ✅ Load image AFTER cluster is ready
       - name: Load image into kind
-        run: kind load docker-image java-hello:latest
+        run: kind load docker-image java-hello:latest --name kind
 
       - name: Deploy to Kubernetes
         run: |
           kubectl apply -f k8s/
           kubectl get pods
+          kubectl get services
